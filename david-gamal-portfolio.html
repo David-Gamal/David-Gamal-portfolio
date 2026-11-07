@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David Gamal — Web Developer &amp; IoT Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c2947;
+    --ink-2:#123a63;
+    --ink-3:#0a2038;
+    --paper:#eef3f8;
+    --paper-dim:#b9c9dc;
+    --accent:#ffb648;
+    --accent-dim:#a97a34;
+    --trace:#5fd8c4;
+    --line: rgba(238,243,248,0.16);
+    --line-strong: rgba(238,243,248,0.34);
+    --radius: 2px;
+    --maxw: 1080px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: -1px -1px;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  a{ color:inherit; }
+  img{max-width:100%;display:block;}
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(12,41,71,0.86);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem;
+    text-decoration:none; color:var(--paper);
+  }
+  .brand .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--trace);
+    box-shadow:0 0 8px var(--trace);
+  }
+  .navlinks{ display:flex; gap:30px; list-style:none; margin:0; padding:0; }
+  .navlinks a{
+    text-decoration:none; color:var(--paper-dim); font-size:0.92rem;
+    padding:4px 2px; border-bottom:1px solid transparent;
+    transition:color .2s, border-color .2s;
+  }
+  .navlinks a.active, .navlinks a:hover{ color:var(--paper); border-color:var(--trace); }
+  .navtoggle{ display:none; background:none; border:1px solid var(--line-strong); color:var(--paper); padding:8px 10px; cursor:pointer; }
+
+  @media(max-width:720px){
+    .navlinks{
+      position:absolute; top:64px; left:0; right:0;
+      background:var(--ink-3); flex-direction:column; gap:0;
+      border-bottom:1px solid var(--line);
+      max-height:0; overflow:hidden; transition:max-height .25s ease;
+    }
+    .navlinks.open{ max-height:320px; }
+    .navlinks a{ padding:16px 28px; border-bottom:1px solid var(--line); width:100%; }
+    .navtoggle{ display:block; }
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero{ padding:88px 0 64px; }
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;
+  }
+  @media(max-width:840px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .eyebrow-line{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.82rem; color:var(--trace);
+    margin-bottom:18px;
+  }
+  .eyebrow-line::before{ content:""; width:22px; height:1px; background:var(--trace); }
+
+  h1.name{ font-size:clamp(2.4rem,5vw,3.4rem); line-height:1.05; }
+  .hero p.lede{
+    max-width:52ch; color:var(--paper-dim); font-size:1.08rem; margin-top:18px;
+  }
+  .factrow{
+    display:flex; flex-wrap:wrap; gap:28px; margin-top:34px;
+  }
+  .fact dt{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.04em; margin:0 0 4px; }
+  .fact dd{ margin:0; font-size:0.95rem; }
+
+  .cta-row{ display:flex; gap:14px; margin-top:38px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 20px; text-decoration:none; font-size:0.92rem;
+    border:1px solid var(--line-strong); color:var(--paper);
+    font-family:'IBM Plex Mono',monospace;
+    transition:background .2s, border-color .2s;
+  }
+  .btn.primary{ background:var(--accent); color:var(--ink-3); border-color:var(--accent); font-weight:500;}
+  .btn.primary:hover{ background:#ffc369; }
+  .btn.ghost:hover{ border-color:var(--trace); color:var(--trace); }
+
+  /* monitor panel */
+  .monitor{
+    border:1px solid var(--line-strong); background:var(--ink-2);
+    padding:22px; position:relative;
+  }
+  .monitor::before, .monitor::after,
+  .monitor .tick-tl, .monitor .tick-br{ content:""; position:absolute; width:14px; height:14px; }
+  .monitor::before{ top:-1px; left:-1px; border-top:2px solid var(--trace); border-left:2px solid var(--trace); }
+  .monitor::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--trace); border-right:2px solid var(--trace); }
+  .monitor-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .monitor-head .label{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim); text-transform:uppercase; letter-spacing:.05em; }
+  .monitor-head .live{ display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--trace); }
+  .live .blip{ width:6px; height:6px; border-radius:50%; background:var(--trace); animation:pulse 1.2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+
+  .ecg{ width:100%; height:110px; }
+  .ecg path{
+    fill:none; stroke:var(--trace); stroke-width:2;
+    stroke-dasharray:1000; stroke-dashoffset:1000;
+    animation:draw 3.2s linear infinite;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  .readouts{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); margin-top:16px; }
+  .readout{ background:var(--ink-2); padding:14px 12px; }
+  .readout .num{ font-family:'Space Grotesk',sans-serif; font-size:1.4rem; color:var(--paper); }
+  .readout .unit{ font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--paper-dim); text-transform:uppercase; }
+
+  @media (prefers-reduced-motion: reduce){
+    .ecg path, .live .blip { animation:none; stroke-dashoffset:0; }
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:76px 0; border-top:1px solid var(--line); }
+  .sec-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:42px; }
+  .sec-head .idx{ font-family:'IBM Plex Mono',monospace; color:var(--trace); font-size:0.85rem; }
+  .sec-head h2{ font-size:1.7rem; }
+  .sec-head .rule{ flex:1; height:1px; background:var(--line-strong); }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:48px; }
+  @media(max-width:780px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-grid p{ color:var(--paper-dim); max-width:62ch; }
+  .about-grid p + p{ margin-top:16px; }
+  .chiplist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .chiplist li{
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem;
+    border-left:2px solid var(--trace); padding:6px 0 6px 14px; color:var(--paper);
+  }
+
+  /* ---------- SKILLS ---------- */
+  .skills{ display:grid; grid-template-columns:repeat(2,1fr); gap:34px 48px; }
+  @media(max-width:700px){ .skills{ grid-template-columns:1fr; } }
+  .skill .top{ display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.92rem; }
+  .skill .top .n{ font-family:'IBM Plex Mono',monospace; color:var(--paper-dim); font-size:0.78rem; }
+  .meter{ display:flex; gap:4px; }
+  .meter span{ height:8px; flex:1; background:var(--line-strong); }
+  .meter span.on{ background:var(--trace); }
+  .skill .tags{ margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--paper-dim); }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline{ position:relative; padding-left:32px; }
+  .timeline::before{ content:""; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line-strong); }
+  .tl-item{ position:relative; padding-bottom:38px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{
+    content:""; position:absolute; left:-32px; top:4px; width:11px; height:11px;
+    border-radius:50%; background:var(--ink); border:2px solid var(--trace);
+  }
+  .tl-item .when{ font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--trace); }
+  .tl-item h3{ font-size:1.08rem; margin-top:6px; }
+  .tl-item .where{ color:var(--paper-dim); font-size:0.9rem; margin-top:2px; }
+  .tl-item p{ color:var(--paper-dim); margin-top:8px; max-width:60ch; font-size:0.94rem; }
+
+  /* ---------- PROJECTS ---------- */
+  .featured{
+    position:relative; border:1px solid var(--line-strong); padding:36px;
+    display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-bottom:44px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  }
+  .featured::before, .featured::after{ content:""; position:absolute; width:16px; height:16px; }
+  .featured::before{ top:-1px; left:-1px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
+  .featured::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+  @media(max-width:800px){ .featured{ grid-template-columns:1fr; } }
+
+  .tag-feat{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; }
+  .featured h3{ font-size:1.5rem; margin-top:10px; }
+  .featured .role{ color:var(--paper-dim); font-size:0.92rem; margin-top:6px; }
+  .featured p.desc{ color:var(--paper-dim); margin-top:16px; max-width:56ch; }
+  .stat-row{ display:flex; gap:26px; margin-top:22px; flex-wrap:wrap; }
+  .stat-row div{ font-family:'Space Grotesk',sans-serif; }
+  .stat-row .n{ font-size:1.3rem; color:var(--accent); }
+  .stat-row .l{ font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--paper-dim); text-transform:uppercase; }
+  .stack-list{ list-style:none; padding:0; margin:22px 0 0; display:flex; flex-wrap:wrap; gap:8px; }
+  .stack-list li{ border:1px solid var(--line-strong); padding:5px 10px; font-family:'IBM Plex Mono',monospace; font-size:0.74rem; color:var(--paper-dim); }
+
+  .featured-side{ border-left:1px solid var(--line); padding-left:36px; }
+  @media(max-width:800px){ .featured-side{ border-left:none; padding-left:0; border-top:1px solid var(--line); padding-top:24px; } }
+  .featured-side .subhead{ font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim); text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px; }
+  .flow{ list-style:none; margin:0; padding:0; counter-reset:flow; }
+  .flow li{ counter-increment:flow; position:relative; padding:0 0 16px 30px; font-size:0.9rem; color:var(--paper-dim); }
+  .flow li::before{
+    content: counter(flow); position:absolute; left:0; top:-2px;
+    width:20px; height:20px; border:1px solid var(--trace); color:var(--trace);
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .featured-side .credit{ margin-top:6px; font-size:0.85rem; color:var(--paper-dim); }
+  .featured-side .credit b{ color:var(--paper); font-weight:500; }
+
+  .grid-projects{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  @media(max-width:900px){ .grid-projects{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:640px){ .grid-projects{ grid-template-columns:1fr; } }
+
+  .spec-card{ position:relative; border:1px solid var(--line-strong); padding:24px; display:flex; flex-direction:column; height:100%; }
+  .spec-card::before, .spec-card::after{ content:""; position:absolute; width:12px; height:12px; }
+  .spec-card::before{ top:-1px; left:-1px; border-top:2px solid var(--trace); border-left:2px solid var(--trace); }
+  .spec-card::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--trace); border-right:2px solid var(--trace); }
+  .spec-card .kind{ font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--trace); text-transform:uppercase; letter-spacing:.05em; }
+  .spec-card h3{ font-size:1.15rem; margin-top:10px; }
+  .spec-card p{ color:var(--paper-dim); font-size:0.9rem; margin-top:10px; flex:1; }
+  .spec-card ul.feat{ list-style:none; padding:0; margin:14px 0 0; display:flex; flex-direction:column; gap:6px; }
+  .spec-card ul.feat li{ font-size:0.84rem; color:var(--paper-dim); padding-left:14px; position:relative; }
+  .spec-card ul.feat li::before{ content:"–"; position:absolute; left:0; color:var(--trace); }
+  .spec-card .stack{ margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim); border-top:1px solid var(--line); padding-top:12px; }
+
+  .whats-next{ margin-top:32px; border-left:2px solid var(--accent); padding:14px 0 14px 18px; color:var(--paper-dim); font-size:0.92rem; max-width:64ch; }
+  .whats-next b{ color:var(--paper); }
+
+  /* ---------- CONTACT ---------- */
+  .contact-block{ display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+  @media(max-width:760px){ .contact-block{ grid-template-columns:1fr; } }
+  .contact-block h2{ font-size:1.9rem; max-width:14ch; }
+  .contact-block p{ color:var(--paper-dim); margin-top:16px; max-width:46ch; }
+  .terminal{ border:1px solid var(--line-strong); background:var(--ink-2); }
+  .term-row{ display:flex; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--line); font-size:0.92rem; }
+  .term-row:last-child{ border-bottom:none; }
+  .term-row .k{ font-family:'IBM Plex Mono',monospace; color:var(--paper-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:.04em; }
+  .term-row a{ text-decoration:none; color:var(--paper); }
+  .term-row a:hover{ color:var(--trace); }
+
+  footer{ border-top:1px solid var(--line); padding:26px 0; }
+  footer .wrap{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--paper-dim); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="brand"><span class="dot"></span>David Gamal</a>
+    <ul class="navlinks" id="navlinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#timeline">Timeline</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="navtoggle" id="navtoggle" aria-label="Toggle menu">☰</button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <img src="images/profile.jpg.jpeg" alt="David Gamal" style="width:200px; height:200px; border-radius:50%; object-fit:cover; border:2px solid var(--trace); margin-bottom:20px;">
+      <div class="eyebrow-line">Junior Web Developer · IoT Builder</div>
+      <h1 class="name">David Gamal</h1>
+      <p class="lede">I build the two halves of a system that most people build separately: the hardware that reads the world, and the interface that makes sense of it.</p>
+
+      <dl class="factrow">
+        <div class="fact"><dt>Based in</dt><dd>Sohag, Egypt</dd></div>
+        <div class="fact"><dt>Studying</dt><dd>Information Technology, New Assiut Technological University</dd></div>
+        <div class="fact"><dt>Graduating</dt><dd>2027</dd></div>
+      </dl>
+
+      <div class="cta-row">
+        <a class="btn primary" href="#work">See the work</a>
+        <a class="btn ghost" href="mailto:Dodo.jamal2021@gmail.com">Email me</a>
+      </div>
+    </div>
+
+    <div class="monitor">
+      <div class="monitor-head">
+        <span class="label">Patient Readout — Prototype Demo</span>
+        <span class="live"><span class="blip"></span>Live</span>
+      </div>
+      <svg class="ecg" viewBox="0 0 400 110" preserveAspectRatio="none">
+        <path d="M0,60 L60,60 L75,60 L85,20 L95,95 L105,45 L115,60 L160,60 L175,60 L185,20 L195,95 L205,45 L215,60 L260,60 L275,60 L285,20 L295,95 L305,45 L315,60 L400,60" />
+      </svg>
+      <div class="readouts">
+        <div class="readout"><div class="num">78</div><div class="unit">BPM · Heart Rate</div></div>
+        <div class="readout"><div class="num">98%</div><div class="unit">SpO₂</div></div>
+        <div class="readout"><div class="num">36.6°</div><div class="unit">Body Temp</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">01</span><h2>About</h2><span class="rule"></span></div>
+    <div class="about-grid">
+      <div>
+        <p>I'm a junior web developer and IoT enthusiast with a strong foundation in web design, software development, and problem-solving. I like writing clean code and building small intelligent systems — usually a website and a piece of hardware talking to each other.</p>
+        <p>Since 2024 I've taken on freelance web design work through Freelancer, and spent my own time programming ESP32 and Arduino boards, wiring sensors, and building the databases and dashboards that display what they measure in real time.</p>
+        <p>I'm currently sizing up a bigger frontend project — a full SaaS-style dashboard with authentication and real data visualization — to push past the scale of what I've shipped so far.</p>
+      </div>
+      <ul class="chiplist">
+        <li>Web Designer Certification — National Telecommunications Institute (NTI), 100% score</li>
+        <li>ICPC Team Member — competitive programming, C++ &amp; Python</li>
+        <li>Freelance web design since 2024, delivered through Freelancer</li>
+        <li>Graduation project exhibited to the Assiut Governor's office</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">02</span><h2>Skills</h2><span class="rule"></span></div>
+    <div class="skills">
+
+      <div class="skill">
+        <div class="top"><span>Web Development</span><span class="n">7/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span class="on"></span><span></span>
+        </div>
+        <div class="tags">HTML · CSS · JavaScript · Bootstrap · Responsive Design</div>
+      </div>
+
+      <div class="skill">
+        <div class="top"><span>Internet of Things</span><span class="n">6/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span></span><span></span>
+        </div>
+        <div class="tags">Arduino · ESP32 · MAX30102 · Sensor &amp; Actuator Integration</div>
+      </div>
+
+      <div class="skill">
+        <div class="top"><span>Programming</span><span class="n">6/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span></span><span></span>
+        </div>
+        <div class="tags">OOP · Data Structures · Algorithms · C++ · Python</div>
+      </div>
+
+      <div class="skill">
+        <div class="top"><span>Frontend Frameworks</span><span class="n">5/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span></span><span></span><span></span>
+        </div>
+        <div class="tags">Angular · React Native · REST APIs · Axios</div>
+      </div>
+
+      <div class="skill">
+        <div class="top"><span>Backend &amp; Data</span><span class="n">5/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span></span><span></span><span></span>
+        </div>
+        <div class="tags">Node.js · Express · MongoDB · Firebase · JWT</div>
+      </div>
+
+      <div class="skill">
+        <div class="top"><span>Working Style</span><span class="n">7/8</span></div>
+        <div class="meter">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span class="on"></span><span></span>
+        </div>
+        <div class="tags">Client Communication · Analytical Thinking · Fast Learner</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">03</span><h2>Timeline</h2><span class="rule"></span></div>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="when">2023 — 2027</div>
+        <h3>B.Sc. Information Technology</h3>
+        <div class="where">New Assiut Technological University</div>
+        <p>Coursework in IT fundamentals, databases, networks, OOP, data structures, web design and software concepts. Standing: excellent so far.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">2024 — Present</div>
+        <h3>Freelance Web Designer</h3>
+        <div class="where">Freelancer.com</div>
+        <p>Designed and built responsive, cross-browser, mobile-friendly websites for small freelance clients, end to end.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">2024 — 2025</div>
+        <h3>IoT Developer, self-directed</h3>
+        <div class="where">Projects &amp; independent study</div>
+        <p>Programmed ESP32 and Arduino microcontrollers, connected sensors and actuators, and built the databases and web interfaces that display their readings live.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">Aug — Sep 2025</div>
+        <h3>Web Designer Certification</h3>
+        <div class="where">National Telecommunications Institute — Digital Egypt Youth Program</div>
+        <p>90 technical hours plus 30 freelancing-coaching hours, completed with a 100% score.</p>
+      </div>
+
+      <div class="tl-item">
+        <div class="when">2025 — 2026</div>
+        <h3>ICPC Team Member</h3>
+        <div class="where">Competitive programming</div>
+        <p>Trained on problem-solving contests, sharpening algorithmic thinking in C++ and Python.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">04</span><h2>Selected work</h2><span class="rule"></span></div>
+
+    <div class="featured">
+      <div>
+        <span class="tag-feat">Graduation Project — IoT + Web</span>
+        <h3>Smart Glasses-Based System for Patient Examination</h3>
+        <div class="role">Team project, New Assiut Technological University</div>
+        <p class="desc">A pair of smart glasses and a companion sensor box that take a patient's temperature, ECG and blood-oxygen reading in one pass, then push the results straight to a doctor's web dashboard in real time — built to make initial patient monitoring faster in places where every minute of triage counts.</p>
+        <div class="stat-row">
+          <div><div class="n">70%</div><div class="l">of emergencies preventable with early monitoring</div></div>
+          <div><div class="n">80%</div><div class="l">inspection time saved</div></div>
+          <div><div class="n">60%</div><div class="l">cost savings</div></div>
+        </div>
+        <ul class="stack-list">
+          <li>ESP32</li><li>MAX30102</li><li>ECG &amp; LCD module</li><li>Firebase</li><li>HTML/CSS/JS dashboard</li>
+        </ul>
+      </div>
+      <div class="featured-side">
+        <div class="subhead">How it works</div>
+        <ul class="flow">
+          <li>Patient stands at the box — the glasses read temperature, the box reads heart rate and oxygen saturation.</li>
+          <li>Readings display instantly on-device, with the ECG trace shown on the on-board screen.</li>
+          <li>Results sync live to the doctor's dashboard alongside the patient's history.</li>
+          <li>Alerts fire automatically when a reading crosses into critical range.</li>
+        </ul>
+        <p class="credit">Supervised by <b>Eng. Duaa Ahmed Fakhry</b>. Demonstrated at a university science exhibition to the Assiut Governor and the university president.</p>
+      </div>
+    </div>
+
+    <div class="grid-projects">
+
+      <div class="spec-card">
+        <span class="kind">Web App</span>
+         <img src="images/taskflow.jpg.png" alt="Task Flow Screenshot" style="width:100%; border-radius:4px; margin-bottom:12px;">
+        <h3>TaskFlow</h3>
+        <p>A bilingual task-management web app with grouped projects, colour-coded categories and a stats dashboard, built as a full MEAN-style stack rather than frontend-only.</p>
+        <ul class="feat">
+          <li>Custom groups with user-chosen colours</li>
+          <li>Dashboard: totals, completed, pending, overdue</li>
+          <li>JWT auth with password recovery</li>
+          <li>Dark mode, Arabic/English, fully responsive</li>
+        </ul>
+        <div class="stack">Angular · Node.js · Express · MongoDB · JWT</div>
+      </div>
+
+      <div class="spec-card">
+        <span class="kind">Frontend / E-commerce</span>
+         <img src="images/shose.jpg.png" alt="Shose Store Screenshot" style="width:100%; border-radius:4px; margin-bottom:12px;">
+        <h3>Shose Store</h3>
+        <p>A responsive shoe e-commerce frontend covering the full shopper flow, from browsing to an on-screen receipt.</p>
+        <ul class="feat">
+          <li>Accounts, cart and wishlist</li>
+          <li>Live totals with discount handling</li>
+          <li>Checkout flow with instant e-receipt</li>
+          <li>Fully responsive with Bootstrap</li>
+        </ul>
+        <div class="stack">HTML5 · CSS3 · JavaScript · Bootstrap</div>
+      </div>
+
+      <div class="spec-card">
+        <span class="kind">Mobile App</span>
+         <img src="images/study.jpg.jpeg" alt="Study Screenshot" style="width:100%; border-radius:4px; margin-bottom:12px;">
+        <h3>Study Planner</h3>
+        <p>A React Native app that helps students organise study schedules, with a daily and weekly planner view.</p>
+        <ul class="feat">
+          <li>Token-based authentication</li>
+          <li>Categories, priorities, progress tracking</li>
+          <li>REST API integration via Axios</li>
+          <li>Dark mode, search &amp; filter</li>
+        </ul>
+        <div class="stack">React Native · TypeScript · Redux/Context</div>
+      </div>
+
+    </div>
+
+    <div class="whats-next">
+      <b>What's next:</b> I've mostly shipped small-to-mid scale projects. I'm now building a premium SaaS dashboard concept — authentication, real data visualisation, large-scale layout — to round out the portfolio at that level.
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap contact-block">
+    <div>
+      <h2>Let's build something.</h2>
+      <p>Open to freelance web work, internships, and IoT projects that need someone comfortable on both sides of the wire.</p>
+    </div>
+    <div class="terminal">
+      <div class="term-row"><span class="k">Phone</span><a href="tel:+201229575902">01229575902</a></div>
+      <div class="term-row"><span class="k">Email</span><a href="mailto:Dodo.jamal2021@gmail.com">Dodo.jamal2021@gmail.com</a></div>
+      <div class="term-row"><span class="k">LinkedIn</span><a href="https://www.linkedin.com/in/david-gamal-99a3b62a6" target="_blank" rel="noopener">david-gamal-99a3b62a6</a></div>
+      <div class="term-row"><span class="k">Location</span><span>Tema, Sohag, Egypt</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>David Gamal — Web Developer &amp; IoT Builder</span>
+    <span>Built with HTML, CSS &amp; JavaScript</span>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  var navtoggle = document.getElementById('navtoggle');
+  var navlinks = document.getElementById('navlinks');
+  navtoggle.addEventListener('click', function(){
+    navlinks.classList.toggle('open');
+  });
+  navlinks.querySelectorAll('a').forEach(function(link){
+    link.addEventListener('click', function(){ navlinks.classList.remove('open'); });
+  });
+
+  // Active-link highlighting on scroll
+  var sections = document.querySelectorAll('section[id], header[id]');
+  var links = document.querySelectorAll('.navlinks a');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var id = entry.target.getAttribute('id');
+        links.forEach(function(l){
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  sections.forEach(function(sec){ observer.observe(sec); });
+</script>
+
+</body>
+</html>
